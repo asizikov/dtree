@@ -8,6 +8,10 @@
 
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>dtree</ToolCommandName>
+
+    <Authors>Anton Sizikov</Authors>
+    <RepositoryUrl>https://github.com/asizikov/dtree</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>
