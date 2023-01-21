@@ -49,7 +49,7 @@ if (args.Length > 0)
     }
 }
 
-var tree = BuildTree(rootDir, 0, maxDepth: 10);
+var tree = BuildTree(rootDir, 0, maxDepth);
 
 PrintTree(tree, "", false);
 
