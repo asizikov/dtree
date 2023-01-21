@@ -55,6 +55,21 @@ sample output:
 └── README.md
 ```
 
+## Help
+    
+```bash
+$ dtree --help
+```
+
+```bash
+Usage: dtree [options]
+Options:
+  -h, --help            Show this help message and exit
+  -p, --path            Set root path of tree
+  -a, --all             Print all files and directories
+  -d, --max-depth       Set max depth of tree
+```
+
 ## Installation
 
 ```bash
