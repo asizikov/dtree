@@ -1,4 +1,53 @@
-﻿var rootDir = new DirectoryInfo("/workspaces/dtree/");
+﻿var rootDir = new DirectoryInfo(".");
+var maxDepth = 10;
+var printAll = false;
+
+if (args.Length > 0)
+{
+    var set = new HashSet<string>(args);
+    if (set.Contains("--help") || set.Contains("-h"))
+    {
+        Console.WriteLine("Usage: dtree [options]");
+        Console.WriteLine("Options:");
+        Console.WriteLine("  -h, --help\t\tShow this help message and exit");
+        Console.WriteLine("  -p, --path\t\tSet root path of tree");
+        Console.WriteLine("  -a, --all\t\tPrint all files and directories");
+        Console.WriteLine("  -d, --max-depth\tSet max depth of tree");
+        return;
+    }
+
+    if (set.Contains("--max-depth") || set.Contains("-d"))
+    {
+        var index = Array.IndexOf(args, "-d");
+        if (index == -1) index = Array.IndexOf(args, "--max-depth");
+        if (index + 1 < args.Length)
+        {
+            if (int.TryParse(args[index + 1], out var depth))
+            {
+                maxDepth = depth;
+            }
+        }
+    }
+
+    if (set.Contains("--path") || set.Contains("-p"))
+    {
+        var index = Array.IndexOf(args, "-p");
+        if (index == -1) index = Array.IndexOf(args, "--path");
+        if (index + 1 < args.Length)
+        {
+            var path = args[index + 1];
+            if (Directory.Exists(path))
+            {
+                rootDir = new DirectoryInfo(path);
+            }
+        }
+    }
+
+    if (set.Contains("--all") || set.Contains("-a"))
+    {
+        printAll = true;
+    }
+}
 
 var tree = BuildTree(rootDir, 0, maxDepth: 10);
 
@@ -27,7 +76,7 @@ static void PrintTree(TreeNode tree, string prefix, bool isLast)
     }
 }
 
-static TreeNode BuildTree(DirectoryInfo dir, int currentDepth, int maxDepth)
+TreeNode BuildTree(DirectoryInfo dir, int currentDepth, int maxDepth)
 {
     var tree = new TreeNode
     {
@@ -36,17 +85,18 @@ static TreeNode BuildTree(DirectoryInfo dir, int currentDepth, int maxDepth)
         Children = new()
     };
 
-
     if (currentDepth <= maxDepth)
     {
         foreach (var subDir in dir.GetDirectories())
         {
-            if (subDir.Name == ".git") continue;
+            if (subDir.Name.StartsWith(".") && !printAll) continue;
             var subTree = BuildTree(subDir, currentDepth + 1, maxDepth);
             tree.Children.Add(subTree);
         }
     }
-    dir.GetFiles().ToList().ForEach(f => tree.Children.Add(new TreeNode
+    dir.GetFiles().Where(f => !f.Name.StartsWith(".") || printAll)
+    .ToList()
+    .ForEach(f => tree.Children.Add(new TreeNode
     {
         Name = f.Name,
         Type = ItemType.File
