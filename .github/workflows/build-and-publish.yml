@@ -18,6 +18,8 @@ jobs:
           if [ "${{ github.ref }}" != "refs/heads/main" ]; then
             version_suffix="${version_suffix}-$(echo ${{ github.ref }} | cut -d'/' -f3)"
           fi
+          pushd src
           dotnet pack -c Release /p:Version=$version_suffix -o ./artifacts
+          popd
       - name: 🚚 Publish package
         run: dotnet nuget push ./artifacts/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
