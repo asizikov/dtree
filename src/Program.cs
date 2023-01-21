@@ -2,23 +2,22 @@
 
 var (tree, depth) = BuildTree(rootDir, 0, maxDepth: 10);
 
-Console.WriteLine("Tree depth: " + depth);
+PrintTree(tree, "", false);
 
-PrintTre(tree, 0);
-
-static void PrintTre(TreeNode tree, int depth)
+static void PrintTree(TreeNode tree, string prefix, bool isLast)
 {
-    var indent = new string(' ', depth * 4);
-
-    var ancor =  tree.Children.Count == 0 ? "└── " : "├── ";
-    Console.Write($"│{indent}{ancor} ");
+    var ancor = tree.Name == "." ? "*" :
+                 isLast ? "└── " : "├── ";
+    var indent = $"{prefix}{ancor}";
+    var nextPrefix = $"{prefix}{(isLast ? "   " : "│   ")}";
+    Console.Write($"{indent}");
     if (tree.Type == ItemType.Directory) Console.ForegroundColor = ConsoleColor.Green;
     Console.Write(tree.Name + Environment.NewLine);
     if (tree.Type == ItemType.Directory) Console.ResetColor();
 
-    foreach (var child in tree.Children)
+    for(var i = 0; i < tree.Children.Count; i++)
     {
-        PrintTre(child, depth + 1);
+        PrintTree(tree.Children[i], nextPrefix, i == tree.Children.Count - 1);
     }
 }
 
@@ -26,9 +25,9 @@ static (TreeNode tree, int depth) BuildTree(DirectoryInfo dir, int currentDepth,
 {
     var tree = new TreeNode
     {
-        Name = dir.Name,
+        Name =  currentDepth == 0 ? "." : dir.Name,
         Type = ItemType.Directory,
-        Children = new List<TreeNode>()
+        Children = new()
     };
 
 
