@@ -1,0 +1,23 @@
+name: Build and publish nuget package
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs: 
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: 🏗️ Build package
+        run: | 
+          version_suffix=0.0.${{ github.run_number }}
+          # append branch name to version if not main
+          if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            version_suffix="${version_suffix}-$(echo ${{ github.ref }} | cut -d'/' -f3)"
+          fi
+          dotnet pack -c Release /p:Version=$version_suffix -o ./artifacts
+      - name: 🚚 Publish package
+        run: dotnet nuget push ./artifacts/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
