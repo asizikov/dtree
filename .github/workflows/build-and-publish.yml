@@ -14,7 +14,6 @@ jobs:
       - name: 🧪 Execute Unit Tests
         run: dotnet test ./tests
       - name: 🏗️ Build package
-        if: github.ref == 'refs/heads/main'
         run: | 
           version_suffix=0.0.${{ github.run_number }}
           # append branch name to version if not main
