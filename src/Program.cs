@@ -24,6 +24,7 @@ if (args.Length > 0)
         {
             if (int.TryParse(args[index + 1], out var depth))
             {
+                if (depth < 0) ErrorAndExit("😱 Max depth must be greater than 0");
                 maxDepth = depth;
             }
         }
@@ -57,6 +58,7 @@ static void PrintTree(TreeNode tree, string prefix, bool isLast)
 {
     var ancor = tree.Name == "." ? "" : isLast ? "└── " : "├── ";
     var nextAncor = tree.Name == "." ? "" : isLast ? "   " : "│   ";
+
     var currentPrefix = $"{prefix}{ancor}";
     var nextPrefix = $"{prefix}{nextAncor}";
 
@@ -85,7 +87,7 @@ TreeNode BuildTree(DirectoryInfo dir, int currentDepth, int maxDepth)
         Children = new()
     };
 
-    if (currentDepth <= maxDepth)
+    if (currentDepth < maxDepth)
     {
         foreach (var subDir in dir.GetDirectories())
         {
@@ -103,4 +105,12 @@ TreeNode BuildTree(DirectoryInfo dir, int currentDepth, int maxDepth)
     }));
 
     return tree;
+}
+
+void ErrorAndExit(string message)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine(message);
+    Console.ResetColor();
+    Environment.Exit(1);
 }

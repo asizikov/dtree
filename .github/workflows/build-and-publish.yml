@@ -2,17 +2,17 @@ name: Build and publish nuget package
 
 on:
   push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs: 
   build-and-publish:
-    name: 👷‍♂️Build and publish nuget package
+    name: 👷‍♂️ Build and publish nuget package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         name: 📥 Checkout
+      - name: 🧪 Execute Unit Tests
+        run: dotnet test ./tests
       - name: 🏗️ Build package
         run: | 
           version_suffix=0.0.${{ github.run_number }}
@@ -25,4 +25,5 @@ jobs:
           dotnet pack -c Release /p:Version=$version_suffix -o $output_dir
           popd
       - name: 🚚 Publish package
+        if: github.ref == 'refs/heads/main'
         run: dotnet nuget push ./artifacts/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
